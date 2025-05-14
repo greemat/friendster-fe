@@ -1,7 +1,8 @@
-// Main.js
+import * as ImagePicker from 'expo-image-picker';
 import { addDoc, collection } from 'firebase/firestore';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { Alert, Image, StyleSheet, View } from 'react-native';
 import { Button, Card, TextInput, Title } from 'react-native-paper';
 import { db } from './firebase';
 
@@ -9,100 +10,114 @@ export default function Main() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
-  const handleSubmit = async () => {
-    if (!email.trim() || !description.trim()) {
-      Alert.alert('Validation Error', 'Please fill out all fields.');
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission Denied', 'Camera access is required.');
       return;
     }
 
-    setLoading(true);
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!name || !email || !description) {
+      Alert.alert('Please fill out all fields.');
+      return;
+    }
+
+    setUploading(true);
+    let imageUrl = '';
+
     try {
+      if (image) {
+        const res = await fetch(image);
+        const blob = await res.blob();
+
+        const filename = `${Date.now()}.jpg`;
+        const storage = getStorage();
+        const storageRef = ref(storage, `uploads/${filename}`);
+
+        await uploadBytes(storageRef, blob);
+        imageUrl = await getDownloadURL(storageRef);
+      }
+
       await addDoc(collection(db, 'submissions'), {
         name,
         email,
         description,
+        imageUrl,
         timestamp: new Date(),
       });
+
+      Alert.alert('Success', 'Submission saved.');
       setName('');
       setEmail('');
       setDescription('');
-      Alert.alert('Success', 'Your information was submitted.');
-    } catch (err) {
-      Alert.alert('Error', err.message);
+      setImage(null);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to submit data.');
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <Card style={styles.card}>
+    <View style={styles.container}>
+      <Card>
         <Card.Content>
-          <Title style={styles.title}>Submit Your Info</Title>
-          <TextInput
-            label="Name"
-            value={name}
-            onChangeText={setName}
-            mode="outlined"
-            style={styles.input}
-          />
-          <TextInput
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            mode="outlined"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            style={styles.input}
-          />
+          <Title>Submit Info</Title>
+
+          <TextInput label="Name" value={name} onChangeText={setName} style={styles.input} />
+          <TextInput label="Email" value={email} onChangeText={setEmail} style={styles.input} />
           <TextInput
             label="Description"
             value={description}
             onChangeText={setDescription}
-            mode="outlined"
+            style={styles.input}
             multiline
-            numberOfLines={4}
-            style={[styles.input, { height: 100 }]}
           />
+
+          <Button icon="camera" onPress={pickImage} style={styles.button}>
+            Take a Picture
+          </Button>
+
+          {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+
           <Button
             mode="contained"
             onPress={handleSubmit}
-            loading={loading}
-            disabled={loading}
+            loading={uploading}
+            disabled={uploading}
             style={styles.button}
           >
             Submit
           </Button>
         </Card.Content>
       </Card>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    justifyContent: 'center',
-  },
-  card: {
-    padding: 16,
-    borderRadius: 12,
-  },
-  title: {
-    marginBottom: 16,
-    fontSize: 22,
-    textAlign: 'center',
-  },
-  input: {
-    marginBottom: 16,
-  },
-  button: {
-    marginTop: 8,
+  container: { padding: 16, flex: 1, justifyContent: 'center' },
+  input: { marginBottom: 12 },
+  button: { marginTop: 10 },
+  imagePreview: {
+    width: '100%',
+    height: 200,
+    marginTop: 10,
+    borderRadius: 8,
   },
 });
