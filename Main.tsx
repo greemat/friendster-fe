@@ -1,12 +1,9 @@
-import { db } from './firebase';
-
+// Main.tsx
 import * as ImagePicker from 'expo-image-picker';
 import { addDoc, collection } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useState } from 'react';
 import {
-  Alert,
-  Image,
   Keyboard,
   ScrollView,
   StyleSheet,
@@ -15,23 +12,38 @@ import {
 import {
   Button,
   Card,
-  TextInput,
-  Title
+  Snackbar,
+  Title,
 } from 'react-native-paper';
 import uuid from 'react-native-uuid';
 
+import ImagePickerSection from './components/ImagePickerSection';
+import UserInputForm from './components/UserInputForm';
+import { db } from './firebase';
+
 const storage = getStorage();
 
-export default function Main() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+export default function Main(): JSX.Element {
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [image, setImage] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
 
-  const handleSubmit = async () => {
+  const showSnackbar = (message: string): void => {
+    setSnackbarMessage(message);
+    setSnackbarVisible(true);
+  };
+
+  const handleSubmit = async (): Promise<void> => {
     Keyboard.dismiss();
-    if (!name || !email || !description) return;
+    if (!name || !email || !description) {
+      showSnackbar('Please fill all fields');
+      return;
+    }
+
     setSubmitting(true);
     try {
       let imageUrl = '';
@@ -48,26 +60,26 @@ export default function Main() {
         email,
         description,
         imageUrl,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       setName('');
       setEmail('');
       setDescription('');
       setImage(null);
-      Alert.alert('Success', 'Your submission was successful!');
+      showSnackbar('Your submission was successful!');
     } catch (error) {
       console.error('Submission failed:', error);
-      Alert.alert('Error', 'Submission failed. Please try again.');
+      showSnackbar('Submission failed. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const pickImageFromCamera = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert('Permission required', 'Camera access is needed.');
+  const pickImageFromCamera = async (): Promise<void> => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      showSnackbar('Camera access is needed.');
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -81,10 +93,10 @@ export default function Main() {
     }
   };
 
-  const pickImageFromGallery = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert('Permission required', 'Gallery access is needed.');
+  const pickImageFromGallery = async (): Promise<void> => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      showSnackbar('Gallery access is needed.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -104,42 +116,23 @@ export default function Main() {
         <Card style={styles.card}>
           <Card.Content>
             <Title>Submit Info</Title>
-            <TextInput
-              label="Name"
-              value={name}
-              onChangeText={setName}
-              onSubmitEditing={Keyboard.dismiss}
-              blurOnSubmit={true}
-              style={styles.input}
+
+            <UserInputForm
+              name={name}
+              setName={setName}
+              email={email}
+              setEmail={setEmail}
+              description={description}
+              setDescription={setDescription}
             />
-            <TextInput
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              onSubmitEditing={Keyboard.dismiss}
-              blurOnSubmit={true}
-              style={styles.input}
+
+            <ImagePickerSection
+              image={image}
+              onPickCamera={pickImageFromCamera}
+              onPickGallery={pickImageFromGallery}
+              onClear={() => setImage(null)}
             />
-            <TextInput
-              label="Description"
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={3}
-              onSubmitEditing={Keyboard.dismiss}
-              blurOnSubmit={true}
-              style={styles.input}
-            />
-            <Button mode="outlined" onPress={pickImageFromCamera} style={styles.button}>
-              Take Photo
-            </Button>
-            <Button mode="outlined" onPress={pickImageFromGallery} style={styles.button}>
-              Pick from Gallery
-            </Button>
-            {image && (
-              <Image source={{ uri: image }} style={styles.image} />
-            )}
+
             <Button
               mode="contained"
               onPress={handleSubmit}
@@ -151,6 +144,14 @@ export default function Main() {
             </Button>
           </Card.Content>
         </Card>
+
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </ScrollView>
     </TouchableWithoutFeedback>
   );
@@ -165,17 +166,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 10,
   },
-  input: {
-    marginBottom: 10,
-    backgroundColor: 'white',
-  },
   button: {
     marginTop: 10,
-  },
-  image: {
-    marginTop: 10,
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
   },
 });
