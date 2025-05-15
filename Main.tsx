@@ -2,7 +2,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { addDoc, collection } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import {
   Keyboard,
   ScrollView,
@@ -21,9 +21,17 @@ import ImagePickerSection from './components/ImagePickerSection';
 import UserInputForm from './components/UserInputForm';
 import { db } from './firebase';
 
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './navigation/AppNavigator';
+
+type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
+
 const storage = getStorage();
 
 export default function Main(): JSX.Element {
+  const navigation = useNavigation<MainScreenNavigationProp>();
+
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -63,11 +71,14 @@ export default function Main(): JSX.Element {
         createdAt: new Date(),
       });
 
+      // Clear form
       setName('');
       setEmail('');
       setDescription('');
       setImage(null);
-      showSnackbar('Your submission was successful!');
+
+      // Navigate to Success screen
+      navigation.navigate('Success', { message: 'Your submission was successful!' });
     } catch (error) {
       console.error('Submission failed:', error);
       showSnackbar('Submission failed. Please try again.');
