@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // Your Firebase config object from the console
 const firebaseConfig = {
@@ -12,8 +14,11 @@ const firebaseConfig = {
   measurementId: "G-YE8S9TQ3D1"
 };
 
+// ✅ Initialize Firebase app once
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
-export { db };
+// ✅ Export Firebase services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
 

@@ -19,7 +19,7 @@ import uuid from 'react-native-uuid';
 
 import ImagePickerSection from './components/ImagePickerSection';
 import UserInputForm from './components/UserInputForm';
-import { db } from './firebase';
+import { db } from './firebase/firebaseConfig';
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
