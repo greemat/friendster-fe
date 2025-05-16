@@ -36,7 +36,7 @@ A React Native app built with Expo that integrates Firebase services (Firestore,
 
    npm install
 
-3. Clone the backend repo and set up your backend server to serve the API key at http://<your-backend-ip>:3000/api/getApiKey
+3. Clone the backend repo and set up your backend server to serve the API key at http://your-backend-ip:3000/api/getApiKey
 
    Clone the backend repo:
 
@@ -46,7 +46,7 @@ A React Native app built with Expo that integrates Firebase services (Firestore,
 
 4. Update the backend IP address in src/contexts/ApiKeyProvider.tsx:
 
-   const response = await fetch('http://<your-backend-ip>/api/getApiKey');
+   const response = await fetch('http://your-backend-ip/api/getApiKey');
 
 5. Run the backend server and then run the front-end app:
 
