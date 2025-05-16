@@ -1,66 +1,55 @@
 // App.tsx
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+
+import { ApiKeyProvider } from './contexts/ApiKeyProvider';
 import { AuthProvider, useAuth } from './contexts/AuthProvider';
+import { FirebaseProvider, useFirebase } from './contexts/FirebaseProvider';
 
-import Main from './Main';
-import LoginScreen from './screens/LoginScreen';
-import SignupScreen from './screens/SignupScreen';
-import SuccessScreen from './screens/SuccessScreen';
+import AppNavigator from './navigation/AppNavigator'; // Your main stack/tab navigator
 
-export type RootStackParamList = {
-  Main: undefined;
-  Success: { message: string };
-  Login: undefined;
-  Signup: undefined;
-};
+const LoadingScreen = () => (
+  <View style={styles.center}>
+    <ActivityIndicator size="large" />
+  </View>
+);
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Providers = ({ children }: { children: React.ReactNode }) => (
+  <ApiKeyProvider>
+    <FirebaseProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </FirebaseProvider>
+  </ApiKeyProvider>
+);
 
-function RootNavigator() {
-  const { user, initializing } = useAuth();
+const Root = () => {
+  const { initializing: firebaseInitializing } = useFirebase();
+  const { initializing: authInitializing } = useAuth();
 
-  if (initializing) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+  if (firebaseInitializing || authInitializing) {
+    return <LoadingScreen />;
   }
 
   return (
-    <Stack.Navigator>
-      {user ? (
-        <>
-          <Stack.Screen name="Main" component={Main} />
-          <Stack.Screen name="Success" component={SuccessScreen} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Signup"
-            component={SignupScreen}
-            options={{ headerShown: false }}
-          />
-        </>
-      )}
-    </Stack.Navigator>
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
   );
-}
+};
 
 export default function App() {
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
-    </AuthProvider>
+    <Providers>
+      <Root />
+    </Providers>
   );
 }
+
+const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

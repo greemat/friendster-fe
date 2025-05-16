@@ -1,13 +1,14 @@
 // Main.tsx
+
 import * as ImagePicker from 'expo-image-picker';
 import { addDoc, collection } from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { JSX, useState } from 'react';
 import {
   Keyboard,
   ScrollView,
   StyleSheet,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {
   Button,
@@ -19,18 +20,18 @@ import uuid from 'react-native-uuid';
 
 import ImagePickerSection from './components/ImagePickerSection';
 import UserInputForm from './components/UserInputForm';
-import { db } from './firebase/firebaseConfig';
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './navigation/AppNavigator';
 
-type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
+import { useFirebase } from './contexts/FirebaseProvider'; // <-- get firebase from context
 
-const storage = getStorage();
+type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
 export default function Main(): JSX.Element {
   const navigation = useNavigation<MainScreenNavigationProp>();
+  const { db, storage } = useFirebase();
 
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -52,6 +53,11 @@ export default function Main(): JSX.Element {
       return;
     }
 
+    if (!db || !storage) {
+      showSnackbar('Firebase is still initializing, please wait.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       let imageUrl = '';
@@ -59,7 +65,13 @@ export default function Main(): JSX.Element {
         const response = await fetch(image);
         const blob = await response.blob();
         const imageRef = ref(storage, `images/${uuid.v4()}`);
-        await uploadBytes(imageRef, blob);
+        try {
+          await uploadBytes(imageRef, blob);
+          console.log('✅ Upload successful');
+        } catch (uploadError) {
+          console.error('❌ Upload failed:', uploadError);
+          throw uploadError; // rethrow so handleSubmit can catch it
+        }
         imageUrl = await getDownloadURL(imageRef);
       }
 

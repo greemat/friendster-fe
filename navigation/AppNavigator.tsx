@@ -8,11 +8,15 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import SuccessScreen from '../screens/SuccessScreen';
 
+
+
+
 export type RootStackParamList = {
   Main: undefined;
   Success: { message: string };
   Login: undefined;
   Signup: undefined;
+  TestAPI: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -34,6 +38,7 @@ export default function AppNavigator() {
         <>
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="Success" component={SuccessScreen} />
+         
         </>
       ) : (
         <>

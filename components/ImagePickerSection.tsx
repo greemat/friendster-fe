@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 

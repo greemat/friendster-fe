@@ -45,7 +45,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ],
+, "firebase/firebaseConfig.ts.bak"  ],
   "exclude": [
     "node_modules",
     "babel.config.js",

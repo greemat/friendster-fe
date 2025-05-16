@@ -1,16 +1,16 @@
-// screens/SignupScreen.tsx
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { Button, Text, TextInput, Title } from 'react-native-paper';
-import { auth } from '../firebase/firebaseConfig';
+import { useFirebase } from '../contexts/FirebaseProvider'; // <-- Use Firebase context here
 
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
 const SignupScreen: React.FC<Props> = ({ navigation }) => {
+  const { auth } = useFirebase(); // Get auth from FirebaseProvider context
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,8 +19,15 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
   const handleSignup = async () => {
     setLoading(true);
     setError('');
+    if (!auth) {
+      setError('Firebase Auth is not initialized yet.');
+      setLoading(false);
+      return;
+    }
+
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      // Optionally navigate on success or show message here
     } catch (e: any) {
       setError(e.message);
     } finally {
