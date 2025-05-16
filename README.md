@@ -1,51 +1,94 @@
-# Welcome to your Expo app 👋
+# ReactNativeDemo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native app built with Expo that integrates Firebase services (Firestore, Storage, Auth) and dynamically fetches the Firebase API key from a backend.
 
-## Get started
+---
 
-1. Install dependencies
+## Features
+
+- Dynamic Firebase config fetched securely from backend
+- Firestore database integration
+- Firebase Storage for image uploads
+- Authentication state management
+- Expo ImagePicker support for photos
+- Form submission with validation and error handling
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14+ recommended)
+- Expo CLI (`npm install -g expo-cli`)
+- A Firebase project with Firestore and Storage enabled
+- Backend API that serves the Firebase API key at `/api/getApiKey`
+
+### Installation
+
+1. Clone the repo:
 
    ```bash
+   git clone https://github.com/yourusername/reactnativedemo.git
+   cd reactnativedemo
+
+2. Install dependecies:
+
    npm install
-   ```
 
-2. Start the app
+3. Clone the backend repo and set up your backend server to serve the API key at http://<your-backend-ip>:3000/api/getApiKey
+
+   Clone the backend repo:
 
    ```bash
-   npx expo start
-   ```
+   git clone https://github.com/yourusername/nodejsbackend.git
+   **follow the readme in the backend repo to get your backend running**
 
-In the output, you'll find options to open the app in a
+4. Update the backend IP address in src/contexts/ApiKeyProvider.tsx:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   const response = await fetch('http://<your-backend-ip>/api/getApiKey');
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+5. Run the backend server and then run the front-end app:
 
-## Get a fresh project
+   expo start
+   
+   Scan the QR code if you have Expo GO app installed or open on your physical device or emulator
 
-When you're ready, run:
+### Project Structure
 
-```bash
-npm run reset-project
-```
+   src/
+   ├── components/          # Reusable UI components
+   ├── contexts/            # Context providers (ApiKeyProvider, FirebaseProvider)
+   ├── navigation/          # Navigation stack and screens
+   ├── screens/             # App screens (Login, Main, Success)
+   ├── App.tsx              # App entry point
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Usage
 
-## Learn more
+   -The app fetches your Firebase API key on startup.
 
-To learn more about developing your project with Expo, look at the following resources:
+   -If fetching fails, you’ll see an error message.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+   -Once Firebase initializes, you can submit the form with a name, email,    description, and optionally upload an image.
 
-## Join the community
+   -Submissions are saved to Firestore and images uploaded to Firebase Storage.
 
-Join our community of developers creating universal apps.
+   -On success, you’ll be navigated to a success screen.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-"# ReactNativeDemo" 
+### Troubleshooting
+
+   -App stuck loading Firebase: Check your backend API URL and network connectivity.
+
+   -Firebase Storage unknown error: Verify Firebase Storage rules and that the API key is correct.
+
+   -Duplicate Firebase app error: Ensure Firebase is initialized only once in FirebaseProvider.
+
+### Dependencies
+
+   -React Native
+   -Expo
+   -Firebase (v9 modular)
+   -React Navigation
+   -React Native Paper
+   -react-native-uuid
+   -expo-image-picker
