@@ -3,8 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '../contexts/AuthProvider';
-import Main from '../Main';
 import LoginScreen from '../screens/LoginScreen';
+import Main from '../screens/Main';
 import SignupScreen from '../screens/SignupScreen';
 import SuccessScreen from '../screens/SuccessScreen';
 

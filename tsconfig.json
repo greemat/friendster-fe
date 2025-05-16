@@ -21,22 +21,22 @@
       "react-native",
       "expo"
     ],
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "paths": {
       "@components/*": [
-        "components/*"
+        "src/components/*"
       ],
       "@screens/*": [
-        "screens/*"
+        "src/screens/*"
       ],
       "@assets/*": [
         "assets/*"
       ],
       "@navigation/*": [
-        "navigation/*"
+        "src/navigation/*"
       ],
       "@contexts/*": [
-        "contexts/*"
+        "src/contexts/*"
       ]
     }
   },
@@ -44,8 +44,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "firebase/firebaseConfig.ts.bak"  ],
+    "expo-env.d.ts",
+    "src",
+    "firebase/firebaseConfig.ts.bak"  ],
   "exclude": [
     "node_modules",
     "babel.config.js",

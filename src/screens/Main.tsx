@@ -18,14 +18,14 @@ import {
 } from 'react-native-paper';
 import uuid from 'react-native-uuid';
 
-import ImagePickerSection from './components/ImagePickerSection';
-import UserInputForm from './components/UserInputForm';
+import ImagePickerSection from '../components/ImagePickerSection';
+import UserInputForm from '../components/UserInputForm';
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from './navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
-import { useFirebase } from './contexts/FirebaseProvider'; // <-- get firebase from context
+import { useFirebase } from '../contexts/FirebaseProvider'; // <-- get firebase from context
 
 type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
