@@ -50,7 +50,7 @@ A React Native app built with Expo that integrates Firebase services (Firestore,
 
 5. Run the backend server and then run the front-end app:
 
-   expo start
+   npx expo start
    
    Scan the QR code if you have Expo GO app installed or open on your physical device or emulator
 
