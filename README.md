@@ -65,30 +65,25 @@ A React Native app built with Expo that integrates Firebase services (Firestore,
 
 ### Usage
 
-   -The app fetches your Firebase API key on startup.
+- The app fetches your Firebase API key on startup.
+- If fetching fails, you’ll see an error message.
+- Once Firebase initializes, you can submit the form with a name, email,    description, and optionally upload an image.
+- Submissions are saved to Firestore and images uploaded to Firebase Storage.
+- On success, you’ll be navigated to a success screen.
 
-   -If fetching fails, you’ll see an error message.
-
-   -Once Firebase initializes, you can submit the form with a name, email,    description, and optionally upload an image.
-
-   -Submissions are saved to Firestore and images uploaded to Firebase Storage.
-
-   -On success, you’ll be navigated to a success screen.
 
 ### Troubleshooting
 
-   -App stuck loading Firebase: Check your backend API URL and network connectivity.
-
-   -Firebase Storage unknown error: Verify Firebase Storage rules and that the API key is correct.
-
-   -Duplicate Firebase app error: Ensure Firebase is initialized only once in FirebaseProvider.
+- App stuck loading Firebase: Check your backend API URL and network connectivity.
+- Firebase Storage unknown error: Verify Firebase Storage rules and that the API key is correct.
+- Duplicate Firebase app error: Ensure Firebase is initialized only once in FirebaseProvider.
 
 ### Dependencies
 
-   -React Native
-   -Expo
-   -Firebase (v9 modular)
-   -React Navigation
-   -React Native Paper
-   -react-native-uuid
-   -expo-image-picker
+- React Native
+- Expo
+- Firebase (v9 modular)
+- React Navigation
+- React Native Paper
+- react-native-uuid
+- expo-image-picker
