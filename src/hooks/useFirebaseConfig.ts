@@ -1,4 +1,7 @@
+import Constants from 'expo-constants';
 import { useEffect, useState } from 'react';
+
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
 
 export interface FirebaseConfig {
   apiKey: string;
@@ -18,7 +21,7 @@ export function useFirebaseConfig() {
   useEffect(() => {
     async function fetchConfig() {
       try {
-        const response = await fetch('http://192.168.1.66:3000/api/getFirebaseConfig');
+        const response = await fetch(`${API_BASE_URL}/api/getFirebaseConfig`);
         if (!response.ok) {
           throw new Error(`Failed to fetch Firebase config: ${response.statusText}`);
         }
