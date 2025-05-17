@@ -1,55 +1,42 @@
-// App.tsx
+// src/App.tsx
+
 import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from 'providers/AuthProvider';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { JSX } from 'react/jsx-runtime';
+import { useFirebaseConfig } from './hooks/useFirebaseConfig';
+import AppNavigator from './navigation/AppNavigator';
+import { FirebaseProvider } from './providers';
 
-import { ApiKeyProvider } from './contexts/ApiKeyProvider';
-import { AuthProvider, useAuth } from './contexts/AuthProvider';
-import { FirebaseProvider, useFirebase } from './contexts/FirebaseProvider';
 
-import AppNavigator from './navigation/AppNavigator'; // Your main stack/tab navigator
+export default function App(): JSX.Element {
+  const { config, initializing, error } = useFirebaseConfig();
 
-const LoadingScreen = () => (
-  <View style={styles.center}>
-    <ActivityIndicator size="large" />
-  </View>
-);
+  if (initializing) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+        <Text>Initializing Firebase...</Text>
+      </View>
+    );
+  }
 
-const Providers = ({ children }: { children: React.ReactNode }) => (
-  <ApiKeyProvider>
-    <FirebaseProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </FirebaseProvider>
-  </ApiKeyProvider>
-);
-
-const Root = () => {
-  const { initializing: firebaseInitializing } = useFirebase();
-  const { initializing: authInitializing } = useAuth();
-
-  if (firebaseInitializing || authInitializing) {
-    return <LoadingScreen />;
+  if (error || !config) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Failed to load Firebase config</Text>
+      </View>
+    );
   }
 
   return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
-  );
-};
-
-export default function App() {
-  return (
-    <Providers>
-      <Root />
-    </Providers>
+    <FirebaseProvider>
+      <AuthProvider>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </AuthProvider>
+    </FirebaseProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

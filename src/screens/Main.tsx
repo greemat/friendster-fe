@@ -5,16 +5,16 @@ import { addDoc, collection } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { JSX, useState } from 'react';
 import {
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
+    Keyboard,
+    ScrollView,
+    StyleSheet,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import {
-  Button,
-  Card,
-  Snackbar,
-  Title,
+    Button,
+    Card,
+    Snackbar,
+    Title,
 } from 'react-native-paper';
 import uuid from 'react-native-uuid';
 
@@ -25,7 +25,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
-import { useFirebase } from '../contexts/FirebaseProvider'; // <-- get firebase from context
+import { useFirebase } from '../providers/FirebaseProvider'; // <-- get firebase from context
 
 type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 

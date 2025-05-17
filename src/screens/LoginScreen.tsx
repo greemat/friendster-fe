@@ -3,7 +3,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Snackbar, TextInput, Title } from 'react-native-paper';
-import { useAuth } from '../contexts/AuthProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
 
