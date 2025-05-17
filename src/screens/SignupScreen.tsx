@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { Button, Text, TextInput, Title } from 'react-native-paper';
-import { useFirebase } from '../contexts/FirebaseProvider'; // <-- Use Firebase context here
+import { useFirebase } from '../providers/FirebaseProvider'; // <-- Use Firebase context here
 
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
 
