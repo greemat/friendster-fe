@@ -1,4 +1,4 @@
-// src/api.ts or wherever you keep API functions
+// API functions, fetching from backend server
 export async function fetchApiKey(): Promise<string> {
   const res = await fetch('http://192.168.1.66:3000/api/getApiKey');
   if (!res.ok) {
@@ -6,5 +6,5 @@ export async function fetchApiKey(): Promise<string> {
   }
 
   const data = await res.json();
-  return data.apiKey; // assuming your backend returns { apiKey: "..." }
+  return data.apiKey;
 }
