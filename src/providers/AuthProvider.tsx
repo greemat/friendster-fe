@@ -31,17 +31,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [initializing, setInitializing] = useState(true);
 
 useEffect(() => {
-  console.log('AuthProvider useEffect triggered, auth:', auth);
+  //console.log('AuthProvider useEffect triggered, auth:', auth);
   if (!auth) return;
 
   const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-    console.log('onAuthStateChanged fired, user:', firebaseUser);
+    //console.log('onAuthStateChanged fired, user:', firebaseUser);
     setUser(firebaseUser);
     if (initializing) setInitializing(false);
   });
 
   return () => {
-    console.log('AuthProvider cleanup: unsubscribing auth listener');
+    //console.log('AuthProvider cleanup: unsubscribing auth listener');
     unsubscribe();
   };
 }, [auth]);
