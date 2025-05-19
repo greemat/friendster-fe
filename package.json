@@ -1,6 +1,6 @@
 {
   "name": "reactnativedemo",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "index.js",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
@@ -35,7 +35,7 @@
     "firebase": "^9.23.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.2",
+    "react-native": "^0.79.2",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-paper": "^5.14.3",
     "react-native-reanimated": "~3.17.4",
