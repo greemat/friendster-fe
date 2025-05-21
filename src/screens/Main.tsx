@@ -1,22 +1,18 @@
-// Main.tsx
-
+// src/screens/Main.tsx
 import * as ImagePicker from 'expo-image-picker';
-import { addDoc, collection } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { JSX, useState } from 'react';
 import {
-    Keyboard,
-    ScrollView,
-    StyleSheet,
-    TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {
-    Button,
-    Card,
-    Snackbar,
-    Title,
+  Button,
+  Card,
+  Snackbar,
+  Title,
 } from 'react-native-paper';
-import uuid from 'react-native-uuid';
 
 import ImagePickerSection from '../components/ImagePickerSection';
 import UserInputForm from '../components/UserInputForm';
@@ -25,13 +21,10 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
-import { useFirebase } from '../providers/FirebaseProvider'; // <-- get firebase from context
-
 type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
 export default function Main(): JSX.Element {
   const navigation = useNavigation<MainScreenNavigationProp>();
-  const { db, storage } = useFirebase();
 
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -48,48 +41,54 @@ export default function Main(): JSX.Element {
 
   const handleSubmit = async (): Promise<void> => {
     Keyboard.dismiss();
+
     if (!name || !email || !description) {
       showSnackbar('Please fill all fields');
       return;
     }
 
-    if (!db || !storage) {
-      showSnackbar('Firebase is still initializing, please wait.');
-      return;
-    }
-
     setSubmitting(true);
+
     try {
-      let imageUrl = '';
+      const formData = new FormData();
+
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('description', description);
+
       if (image) {
+        const filename = image.split('/').pop() || `photo_${Date.now()}.jpg`;
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+        // Convert local URI to blob for React Native
         const response = await fetch(image);
         const blob = await response.blob();
-        const imageRef = ref(storage, `images/${uuid.v4()}`);
-        try {
-          await uploadBytes(imageRef, blob);
-          console.log('✅ Upload successful');
-        } catch (uploadError) {
-          console.error('❌ Upload failed:', uploadError);
-          throw uploadError; // rethrow so handleSubmit can catch it
-        }
-        imageUrl = await getDownloadURL(imageRef);
+
+        formData.append('image', {
+          uri: image,
+          name: filename,
+          type,
+        } as any);
       }
 
-      await addDoc(collection(db, 'submissions'), {
-        name,
-        email,
-        description,
-        imageUrl,
-        createdAt: new Date(),
+      const res = await fetch('http://192.168.1.78:3000/api/submitForm', {
+        method: 'POST',
+        headers: {
+          // DO NOT set 'Content-Type' here; let fetch set the multipart/form-data boundary
+        },
+        body: formData,
       });
 
-      // Clear form
+      if (!res.ok) {
+        throw new Error('Failed to submit form');
+      }
+
       setName('');
       setEmail('');
       setDescription('');
       setImage(null);
 
-      // Navigate to Success screen
       navigation.navigate('Success', { message: 'Your submission was successful!' });
     } catch (error) {
       console.error('Submission failed:', error);
@@ -135,7 +134,7 @@ export default function Main(): JSX.Element {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Card style={styles.card}>
           <Card.Content>
             <Title>Submit Info</Title>

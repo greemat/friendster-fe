@@ -1,6 +1,6 @@
+// navigation/types.ts (or inside RootNavigator.tsx)
 export type RootStackParamList = {
-  Main: undefined;
-  Success: { message: string };
-  Login: undefined;
-  Signup: undefined;
+  Splash: undefined;
+  AuthRoot: undefined;
+  MainRoot: undefined;
 };

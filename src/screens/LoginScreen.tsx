@@ -1,16 +1,15 @@
-// screens/LoginScreen.tsx
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Snackbar, TextInput, Title } from 'react-native-paper';
-import { useAuth } from '../providers/AuthProvider';
-
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
+import { useAuth } from '../providers/AuthProvider';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const { login } = useAuth();
+
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -20,9 +19,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     setLoading(true);
     setError('');
     try {
+      //console.log('handleLogin triggered');
       await login(email, password);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'An unknown error occurred';
+      // No manual navigation here — RootNavigator switches automatically on user set
+    } catch (err: any) {
+      //console.log('Login error:', err);
+      const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
     } finally {
       setLoading(false);

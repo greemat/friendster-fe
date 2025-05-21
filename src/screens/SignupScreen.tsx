@@ -1,82 +1,106 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
-import { Button, Text, TextInput, Title } from 'react-native-paper';
-import { useFirebase } from '../providers/FirebaseProvider'; // <-- Use Firebase context here
-
+import { StyleSheet, View } from 'react-native';
+import { Button, Snackbar, TextInput, Title } from 'react-native-paper';
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
 const SignupScreen: React.FC<Props> = ({ navigation }) => {
-  const { auth } = useFirebase(); // Get auth from FirebaseProvider context
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSignup = async () => {
-    setLoading(true);
-    setError('');
-    if (!auth) {
-      setError('Firebase Auth is not initialized yet.');
-      setLoading(false);
+  const handleSignup = async (): Promise<void> => {
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
 
+    setLoading(true);
+    setError('');
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      // Optionally navigate on success or show message here
-    } catch (e: any) {
-      setError(e.message);
+      const response = await fetch('http://192.168.1.78:3000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Signup failed');
+      }
+
+      const data = await response.json();
+      //console.log('Signup successful:', data);
+
+      // Reset the root navigator to Main screen after successful signup
+      navigation.getParent()?.reset({
+        index: 0,
+        routes: [{ name: 'Main' }],
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={styles.card}>
-        <Title style={styles.title}>Sign Up</Title>
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          style={styles.input}
-        />
-        <TextInput
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Button mode="contained" onPress={handleSignup} loading={loading} style={styles.button}>
-          Sign Up
-        </Button>
-        <Button onPress={() => navigation.navigate('Login')} style={styles.link}>
-          Already have an account? Log in
-        </Button>
-      </View>
-    </KeyboardAvoidingView>
+    <View style={styles.container}>
+      <Title style={styles.title}>Sign Up</Title>
+      <TextInput
+        label="Email"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        style={styles.input}
+      />
+      <TextInput
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <TextInput
+        label="Confirm Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <Button
+        mode="contained"
+        onPress={handleSignup}
+        loading={loading}
+        disabled={loading}
+        style={styles.button}
+      >
+        Sign Up
+      </Button>
+      <Button onPress={() => navigation.navigate('Login')} style={styles.link}>
+        Already have an account? Login
+      </Button>
+      <Snackbar visible={!!error} onDismiss={() => setError('')} duration={3000}>
+        {error}
+      </Snackbar>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  card: { backgroundColor: 'white', padding: 20, borderRadius: 12, elevation: 2 },
-  title: { marginBottom: 20, alignSelf: 'center' },
-  input: { marginBottom: 12 },
-  button: { marginTop: 12 },
-  link: { marginTop: 10, alignSelf: 'center' },
-  error: { color: 'red', marginBottom: 10 },
+  container: { padding: 20, flex: 1, justifyContent: 'center' },
+  input: { marginBottom: 10 },
+  button: { marginTop: 10 },
+  title: { marginBottom: 20, textAlign: 'center' },
+  link: { marginTop: 10, textAlign: 'center' },
 });
 
 export default SignupScreen;
