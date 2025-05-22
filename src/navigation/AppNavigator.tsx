@@ -1,4 +1,6 @@
-// navigation/AppNavigator.tsx
+// Configures app navigation using React Navigation.
+// Renders either authenticated or unauthenticated stacks based on user state.
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';

@@ -1,3 +1,6 @@
+// Login screen for user authentication.
+// Submits credentials to backend and updates auth context on success.
+
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';

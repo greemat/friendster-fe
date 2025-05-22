@@ -1,4 +1,5 @@
-// screens/WelcomeScreen.tsx
+// Welcome screen for new or authenticated users.
+
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';

@@ -1,3 +1,5 @@
+// Reusable form component for collecting user name, email, and description.
+
 import React, { JSX } from 'react';
 import { StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';

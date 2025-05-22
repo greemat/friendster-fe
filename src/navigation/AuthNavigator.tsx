@@ -1,4 +1,5 @@
-// navigation/AuthNavigator.tsx
+// Navigator for unauthenticated users (e.g. Login, Signup).
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import LoginScreen from '../screens/LoginScreen';

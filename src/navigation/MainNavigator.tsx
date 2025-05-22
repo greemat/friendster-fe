@@ -1,4 +1,5 @@
-// navigation/MainNavigator.tsx
+// Navigator for authenticated users, defines main app flow screens.
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import Main from '../screens/Main';

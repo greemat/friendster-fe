@@ -1,4 +1,5 @@
-// navigation/SplashNavigator.tsx
+// Navigator for splash/loading phase before determining auth or app state.
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import WelcomeScreen from '../screens/WelcomeScreen';

@@ -1,3 +1,6 @@
+// Main screen for authenticated users.
+// Handles user input, image picking, and form submission to the backend.
+
 import { API_BASE_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';

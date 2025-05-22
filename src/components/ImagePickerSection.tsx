@@ -1,3 +1,5 @@
+// Image picker component for selecting or clearing an image from camera or gallery.
+
 import React, { JSX } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';

@@ -1,3 +1,5 @@
+// Custom hook to fetch and provide Firebase config from the backend.
+
 import Constants from 'expo-constants';
 import { useEffect, useState } from 'react';
 

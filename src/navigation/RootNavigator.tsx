@@ -1,3 +1,5 @@
+// Root navigator that switches between Auth and Main stacks based on auth state.
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { useAuth } from '../providers/AuthProvider';

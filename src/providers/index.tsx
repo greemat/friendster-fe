@@ -1,3 +1,5 @@
+// Entry point for the React Native app; initializes the app root.
+
 import React from 'react';
 
 type ProvidersProps = {

@@ -1,3 +1,6 @@
+// Authentication context provider.
+// Handles login, logout, token refresh, and user session loading using SecureStore.
+
 import { API_BASE_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';

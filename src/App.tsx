@@ -1,3 +1,5 @@
+// Root component of the app; sets up providers and navigation.
+
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import RootNavigator from './navigation/RootNavigator';

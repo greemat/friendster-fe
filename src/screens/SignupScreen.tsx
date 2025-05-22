@@ -1,3 +1,5 @@
+// Sign-up screen for new users (extendable to register users via backend).
+
 import { API_BASE_URL } from '@env';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';

@@ -1,3 +1,5 @@
+// Logout button component used in the main screen header to handle token removal and navigation back to login screen.
+
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
