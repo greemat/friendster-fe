@@ -1,7 +1,7 @@
 // navigation/MainNavigator.tsx
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import Main from '../screens/Main'; // your form screen
+import Main from '../screens/Main';
 import SuccessScreen from '../screens/SuccessScreen';
 
 export type MainStackParamList = {

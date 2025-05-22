@@ -35,7 +35,6 @@ export default function AppNavigator() {
         <>
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="Success" component={SuccessScreen} />
-         
         </>
       ) : (
         <>

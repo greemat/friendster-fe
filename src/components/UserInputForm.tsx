@@ -3,21 +3,15 @@ import { StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
 type Props = {
-  name: string;
-  setName: (value: string) => void;
-  email: string;
-  setEmail: (value: string) => void;
-  description: string;
-  setDescription: (value: string) => void;
+  name: string; setName: (value: string) => void;
+  email: string; setEmail: (value: string) => void;
+  description: string; setDescription: (value: string) => void;
 };
 
 export default function UserInputForm({
-  name,
-  setName,
-  email,
-  setEmail,
-  description,
-  setDescription,
+  name, setName,
+  email, setEmail,
+  description, setDescription,
 }: Props): JSX.Element {
   return (
     <>

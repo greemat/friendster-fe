@@ -33,7 +33,6 @@ export function useFirebaseConfig() {
         setInitializing(false);
       }
     }
-
     fetchConfig();
   }, []);
 

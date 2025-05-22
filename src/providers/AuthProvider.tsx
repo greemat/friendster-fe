@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
@@ -27,14 +28,10 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const API_BASE_URL = 'http://192.168.1.78:3000';
-
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User>(null);
   const [initializing, setInitializing] = useState(true);
-
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   const api = axios.create({ baseURL: API_BASE_URL });
 
   api.interceptors.request.use(async (config) => {
@@ -71,12 +68,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
       const res = await axios.post(`${API_BASE_URL}/auth/refresh-token`, { refreshToken });
       const { token: newToken, refreshToken: newRefreshToken } = res.data;
-
       if (!newToken || !newRefreshToken) throw new Error('Invalid tokens from refresh');
-
       await SecureStore.setItemAsync('token', newToken);
       await SecureStore.setItemAsync('refreshToken', newRefreshToken);
-
       return newToken;
     } catch (err) {
       console.error('Failed to refresh token:', err);
@@ -90,10 +84,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
       const { token, refreshToken } = res.data;
       if (!token || !refreshToken) throw new Error('Missing tokens on login');
-
       await SecureStore.setItemAsync('token', token);
       await SecureStore.setItemAsync('refreshToken', refreshToken);
-
       const profileRes = await api.get('/auth/profile');
       setUser({ id: profileRes.data.uid, email: profileRes.data.email });
     } catch (err: unknown) {
@@ -124,19 +116,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         const token = await SecureStore.getItemAsync('token');
         const refreshToken = await SecureStore.getItemAsync('refreshToken');
-
         if (!token || !refreshToken) {
           setUser(null);
           return;
         }
-
         const newToken = await refreshAuthToken();
-
         if (!newToken) {
           setUser(null);
           return;
         }
-
         const profileRes = await api.get('/auth/profile');
         setUser({ id: profileRes.data.uid, email: profileRes.data.email });
       } catch (err) {
@@ -145,7 +133,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setInitializing(false);
       }
     };
-
     loadUser();
   }, []);
 
