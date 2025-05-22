@@ -1,6 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, ReactNode, useEffect, useState } from 'react';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
 type User = { id: string; email: string } | null;
 
@@ -30,6 +33,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User>(null);
   const [initializing, setInitializing] = useState(true);
 
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const api = axios.create({ baseURL: API_BASE_URL });
 
   api.interceptors.request.use(async (config) => {
@@ -45,10 +50,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
-      if (
-        error.response?.status === 401 &&
-        !originalRequest._retry
-      ) {
+      if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         const newToken = await refreshAuthToken();
         if (newToken) {
@@ -86,7 +88,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
-      //console.log('Login response:', res.data);
       const { token, refreshToken } = res.data;
       if (!token || !refreshToken) throw new Error('Missing tokens on login');
 
@@ -94,7 +95,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       await SecureStore.setItemAsync('refreshToken', refreshToken);
 
       const profileRes = await api.get('/auth/profile');
-      //console.log('Profile response:', profileRes.data);
       setUser({ id: profileRes.data.uid, email: profileRes.data.email });
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -109,52 +109,45 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
-    setUser(null);
-    await SecureStore.deleteItemAsync('token');
-    await SecureStore.deleteItemAsync('refreshToken');
-  };
-
-useEffect(() => {
-  const loadUser = async () => {
-    setInitializing(true);
     try {
-      const token = await SecureStore.getItemAsync('token');
-      const refreshToken = await SecureStore.getItemAsync('refreshToken');
-
-
-      if (!token || !refreshToken) {
-        // No tokens found, user is logged out
-        setUser(null);
-        return;
-      }
-
-      // Try refreshing token before loading profile
-      const newToken = await refreshAuthToken();
-
-      if (!newToken) {
-        // Refresh failed, logout
-        setUser(null);
-        return;
-      }
-
-      // Fetch user profile with refreshed token
-      const profileRes = await api.get('/auth/profile');
-      setUser({ id: profileRes.data.uid, email: profileRes.data.email });
-
-      //console.log('Token on load:', token);
-      //console.log('Refresh token on load:', refreshToken);
-      //console.log('Profile response:', profileRes.data);
-    } catch (err) {
-      //console.error('Failed to load user profile:', err);
+      await SecureStore.deleteItemAsync('token');
+      await SecureStore.deleteItemAsync('refreshToken');
       setUser(null);
-    } finally {
-      setInitializing(false);
+    } catch (err) {
+      console.error('Logout error:', err);
     }
   };
 
-  loadUser();
-}, []);
+  useEffect(() => {
+    const loadUser = async () => {
+      setInitializing(true);
+      try {
+        const token = await SecureStore.getItemAsync('token');
+        const refreshToken = await SecureStore.getItemAsync('refreshToken');
 
+        if (!token || !refreshToken) {
+          setUser(null);
+          return;
+        }
+
+        const newToken = await refreshAuthToken();
+
+        if (!newToken) {
+          setUser(null);
+          return;
+        }
+
+        const profileRes = await api.get('/auth/profile');
+        setUser({ id: profileRes.data.uid, email: profileRes.data.email });
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setInitializing(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   return (
     <AuthContext.Provider

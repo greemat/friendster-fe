@@ -8,9 +8,6 @@ import Main from '../screens/Main';
 import SignupScreen from '../screens/SignupScreen';
 import SuccessScreen from '../screens/SuccessScreen';
 
-
-
-
 export type RootStackParamList = {
   Main: undefined;
   Success: { message: string };
