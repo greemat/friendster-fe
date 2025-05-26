@@ -1,4 +1,4 @@
-# ReactNativeDemo
+# friendster-fe
 
 A React Native app built with Expo that integrates Firebase services (Firestore, Storage, Auth) and dynamically fetches the Firebase API key from a backend.
 
@@ -29,8 +29,8 @@ A React Native app built with Expo that integrates Firebase services (Firestore,
 1. Clone the repo:
 
    ```bash
-   git clone https://github.com/yourusername/reactnativedemo.git
-   cd reactnativedemo
+   git clone https://github.com/yourusername/friendster-fe.git
+   cd friendster-fe
 
 2. Install dependecies:
 
@@ -41,7 +41,7 @@ A React Native app built with Expo that integrates Firebase services (Firestore,
    Clone the backend repo:
 
    ```bash
-   git clone https://github.com/yourusername/nodejsbackend.git
+   git clone https://github.com/yourusername/friendster-be.git
    **follow the readme in the backend repo to get your backend running**
 
 4. Update the backend IP address in src/contexts/ApiKeyProvider.tsx:
