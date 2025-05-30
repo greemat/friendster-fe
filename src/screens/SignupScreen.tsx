@@ -3,9 +3,10 @@
 import { API_BASE_URL } from '@env';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { Button, Snackbar, TextInput, Title } from 'react-native-paper';
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
+import { styles } from '../theme/styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
@@ -98,6 +99,7 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
+/*
 const styles = StyleSheet.create({
   container: { padding: 20, flex: 1, justifyContent: 'center' },
   input: { marginBottom: 10 },
@@ -105,5 +107,6 @@ const styles = StyleSheet.create({
   title: { marginBottom: 20, textAlign: 'center' },
   link: { marginTop: 10, textAlign: 'center' },
 });
+*/
 
 export default SignupScreen;

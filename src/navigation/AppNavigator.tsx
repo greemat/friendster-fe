@@ -6,7 +6,7 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '../providers/AuthProvider';
 import LoginScreen from '../screens/LoginScreen';
-import Main from '../screens/Main';
+import Main from '../screens/MainScreen';
 import SignupScreen from '../screens/SignupScreen';
 import SuccessScreen from '../screens/SuccessScreen';
 

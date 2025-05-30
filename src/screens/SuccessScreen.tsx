@@ -2,8 +2,9 @@
 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import type { RootStackParamList } from '../navigation/types';
+import { styles } from '../theme/styles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Success'>;
 
@@ -17,8 +18,11 @@ const SuccessScreen: React.FC<Props> = ({ route }) => {
   );
 };
 
+/*
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });
+
+*/
 
 export default SuccessScreen;

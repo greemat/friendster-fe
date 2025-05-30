@@ -2,7 +2,7 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import Main from '../screens/Main';
+import Main from '../screens/MainScreen';
 import SuccessScreen from '../screens/SuccessScreen';
 
 export type MainStackParamList = {
