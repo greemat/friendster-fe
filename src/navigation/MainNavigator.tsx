@@ -2,11 +2,13 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import Main from '../screens/MainScreen';
+import MainScreen from '../screens/MainScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import SuccessScreen from '../screens/SuccessScreen';
 
 export type MainStackParamList = {
   Main: undefined;
+  Profile: undefined;
   Success: { message: string };
 };
 
@@ -17,9 +19,14 @@ export default function MainNavigator() {
     <Stack.Navigator initialRouteName="Main">
       <Stack.Screen 
         name="Main" 
-        component={Main} 
+        component={MainScreen} 
         options={{ title: 'Fill Your Details' }}
       />
+      <Stack.Screen 
+        name="Profile" 
+        component={ProfileScreen} 
+        options={{ title: 'Manage Your Profile' }}
+      />      
       <Stack.Screen 
         name="Success" 
         component={SuccessScreen} 

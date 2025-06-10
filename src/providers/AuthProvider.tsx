@@ -1,30 +1,35 @@
-// Authentication context provider.
-// Handles login, logout, token refresh, and user session loading using SecureStore.
-
+// src/providers/AuthProvider.tsx
 import { API_BASE_URL } from '@env';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, ReactNode, useEffect, useState } from 'react';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import api from '../utils/axios';
 
-type User = { id: string; email: string } | null;
+type User = {
+  id: string;
+  email: string;
+  profileImage?: string | null;
+} | null;
 
 interface AuthContextType {
   user: User;
+  token: string | null;
   initializing: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshAuthToken: () => Promise<string | null>;
+  updateUserProfile: (data: FormData) => Promise<void>;
+  setProfileImage: (uri: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
+  token: null,
   initializing: true,
   login: async () => {},
   logout: async () => {},
   refreshAuthToken: async () => null,
+  updateUserProfile: async () => {},
+  setProfileImage: () => {},
 });
 
 interface AuthProviderProps {
@@ -33,24 +38,23 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(true);
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const api = axios.create({ baseURL: API_BASE_URL });
 
+  api.create({ baseURL: API_BASE_URL });
   api.interceptors.request.use(async (config) => {
-    const token = await SecureStore.getItemAsync('token');
     if (token) {
-      config.headers = config.headers ?? {};
+      config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   });
 
   api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const originalRequest = error.config;
-      if (error.response?.status === 401 && !originalRequest._retry) {
+    (res) => res,
+    async (err) => {
+      const originalRequest = err.config;
+      if (err.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         const newToken = await refreshAuthToken();
         if (newToken) {
@@ -58,95 +62,118 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           return api(originalRequest);
         }
       }
-      return Promise.reject(error);
+      return Promise.reject(err);
     }
   );
 
   const refreshAuthToken = async (): Promise<string | null> => {
     try {
-      const refreshToken = await SecureStore.getItemAsync('refreshToken');
-      if (!refreshToken) {
+      const storedRefresh = await SecureStore.getItemAsync('refreshToken');
+      if (!storedRefresh) {
         await logout();
         return null;
       }
-      const res = await axios.post(`${API_BASE_URL}/auth/refresh-token`, { refreshToken });
-      const { token: newToken, refreshToken: newRefreshToken } = res.data;
-      if (!newToken || !newRefreshToken) throw new Error('Invalid tokens from refresh');
-      await SecureStore.setItemAsync('token', newToken);
-      await SecureStore.setItemAsync('refreshToken', newRefreshToken);
-      return newToken;
+
+      const res = await api.post(`${API_BASE_URL}/auth/refresh-token`, {
+        refreshToken: storedRefresh,
+      });
+
+      const { token: newToken, refreshToken: newRefresh } = res.data;
+
+      if (newToken && newRefresh) {
+        await SecureStore.setItemAsync('token', newToken);
+        await SecureStore.setItemAsync('refreshToken', newRefresh);
+        setToken(newToken);
+        return newToken;
+      }
+
+      throw new Error('Invalid tokens received');
     } catch (err) {
-      console.error('Failed to refresh token:', err);
+      console.error('Token refresh failed:', err);
       await logout();
       return null;
     }
   };
 
   const login = async (email: string, password: string) => {
-    try {
-      const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
-      const { token, refreshToken } = res.data;
-      if (!token || !refreshToken) throw new Error('Missing tokens on login');
-      await SecureStore.setItemAsync('token', token);
-      await SecureStore.setItemAsync('refreshToken', refreshToken);
-      const profileRes = await api.get('/auth/profile');
-      setUser({ id: profileRes.data.uid, email: profileRes.data.email });
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        console.error('Login error:', err.response?.data || err.message);
-      } else if (err instanceof Error) {
-        console.error('Login error:', err.message);
-      } else {
-        console.error('Login error:', err);
-      }
-      throw err;
-    }
+    const res = await api.post(`${API_BASE_URL}/auth/login`, { email, password });
+    const { token: accessToken, refreshToken } = res.data;
+
+    if (!accessToken || !refreshToken) throw new Error('Missing token or refreshToken');
+
+    await SecureStore.setItemAsync('token', accessToken);
+    await SecureStore.setItemAsync('refreshToken', refreshToken);
+    setToken(accessToken);
+
+    const profileRes = await api.get('/auth/profile');
+    setUser({
+      id: profileRes.data.uid,
+      email: profileRes.data.email,
+      profileImage: profileRes.data.profileImage || null,
+    });
   };
 
   const logout = async () => {
-    try {
-      await SecureStore.deleteItemAsync('token');
-      await SecureStore.deleteItemAsync('refreshToken');
-      setUser(null);
-    } catch (err) {
-      console.error('Logout error:', err);
+    await SecureStore.deleteItemAsync('token');
+    await SecureStore.deleteItemAsync('refreshToken');
+    setUser(null);
+    setToken(null);
+  };
+
+  const updateUserProfile = async (data: FormData) => {
+    const res = await api.post('/users/profile-picture', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    const { profileImage } = res.data;
+    if (profileImage) {
+      setUser((prev) => prev && { ...prev, profileImage });
     }
   };
 
+  const setProfileImage = (uri: string) => {
+    if (user) setUser({ ...user, profileImage: uri });
+  };
+
   useEffect(() => {
-    const loadUser = async () => {
+    const restoreSession = async () => {
       setInitializing(true);
       try {
-        const token = await SecureStore.getItemAsync('token');
-        const refreshToken = await SecureStore.getItemAsync('refreshToken');
-        if (!token || !refreshToken) {
-          setUser(null);
-          return;
-        }
+        const savedToken = await SecureStore.getItemAsync('token');
+        const savedRefresh = await SecureStore.getItemAsync('refreshToken');
+
+        if (!savedToken || !savedRefresh) return;
+
         const newToken = await refreshAuthToken();
-        if (!newToken) {
-          setUser(null);
-          return;
-        }
+        if (!newToken) return;
+
         const profileRes = await api.get('/auth/profile');
-        setUser({ id: profileRes.data.uid, email: profileRes.data.email });
+        setUser({
+          id: profileRes.data.uid,
+          email: profileRes.data.email,
+          profileImage: profileRes.data.profileImage || null,
+        });
       } catch (err) {
-        setUser(null);
+        console.warn('Session restoration failed:', err);
       } finally {
         setInitializing(false);
       }
     };
-    loadUser();
+
+    restoreSession();
   }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        token,
         initializing,
         login,
         logout,
         refreshAuthToken,
+        updateUserProfile,
+        setProfileImage,
       }}
     >
       {children}

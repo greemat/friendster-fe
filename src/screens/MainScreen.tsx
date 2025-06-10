@@ -16,15 +16,15 @@ import {
 import { Button, IconButton, Snackbar, Text } from 'react-native-paper';
 import ImagePickerSection from '../components/ImagePickerSection';
 import UserInputForm from '../components/UserInputForm';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { MainStackParamList } from '../navigation/MainNavigator';
 import { useAuth } from '../providers/AuthProvider';
 import { styles } from '../theme/styles';
 
-type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
+type MainScreenNavigationProp = NativeStackNavigationProp<MainStackParamList, 'Main'>;
 
 export default function MainScreen() {
   const navigation = useNavigation<MainScreenNavigationProp>();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [description, setDescription] = useState('');
@@ -64,10 +64,24 @@ export default function MainScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <IconButton icon="logout" onPress={logout} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <IconButton
+            icon="logout"
+            size={28}
+            onPress={logout}
+          />
+          {user && (
+            <IconButton
+              icon="account-circle"
+              size={28}
+              onPress={() => navigation.navigate('Profile')}
+              style={{ marginRight: 8 }}
+            />
+          )}
+        </View>
       ),
     });
-  }, [navigation, logout]);
+  }, [navigation, logout, user]);
 
   const handleSubmit = async () => {
     Keyboard.dismiss();
@@ -194,6 +208,7 @@ export default function MainScreen() {
           >
             Submit
           </Button>
+
         </View>
 
         <Snackbar

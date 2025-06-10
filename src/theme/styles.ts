@@ -147,5 +147,26 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
+  // Add to your createStyles function
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 16,
+    alignSelf: 'center',
+  },
+  imagePlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#cccccc50',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    alignSelf: 'center',
+  },
+  imagePlaceholderText: {
+    color: '#888888',
+  },
 });
 
