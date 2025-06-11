@@ -3,7 +3,7 @@ import { API_BASE_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Animated,
   Easing,
@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import { Button, IconButton, Snackbar, Text } from 'react-native-paper';
+import { Button, Snackbar, Text } from 'react-native-paper';
 import ImagePickerSection from '../components/ImagePickerSection';
 import UserInputForm from '../components/UserInputForm';
 import { MainStackParamList } from '../navigation/MainNavigator';
@@ -61,28 +61,6 @@ export default function MainScreen() {
     }).start(() => setModalVisible(false));
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconButton
-            icon="logout"
-            size={28}
-            onPress={logout}
-          />
-          {user && (
-            <IconButton
-              icon="account-circle"
-              size={28}
-              onPress={() => navigation.navigate('Profile')}
-              style={{ marginRight: 8 }}
-            />
-          )}
-        </View>
-      ),
-    });
-  }, [navigation, logout, user]);
-
   const handleSubmit = async () => {
     Keyboard.dismiss();
     if (!name || !email || !description) {
@@ -125,9 +103,6 @@ export default function MainScreen() {
       setDescription('');
       setImage(null);
 
-      //navigation.navigate('Success', { message: 'Your submission was successful!' });
-      //showSnackbar('Your submission was successful!');
-      //setSuccessModalVisible(true);
       showModal();
 
     } catch (error) {
@@ -272,48 +247,3 @@ export default function MainScreen() {
     </TouchableWithoutFeedback>
   );
 }
-
-/*
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f2f2f2',
-  },
-  inner: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 24,
-    textAlign: 'center',
-    color: '#222222',
-  },
-  button: {
-    marginTop: 24,
-    borderRadius: 12,
-    backgroundColor: '#4f46e5', // Indigo for a modern, vibrant feel
-  },
-  buttonContent: {
-    height: 50,
-  },
-  buttonLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#ffffff',
-  },
-  snackbar: {
-    backgroundColor: '#333333',
-    borderRadius: 8,
-  },
-});
-*/

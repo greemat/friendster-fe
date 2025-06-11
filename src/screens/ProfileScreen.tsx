@@ -14,6 +14,7 @@ import {
   Snackbar,
   Text,
 } from 'react-native-paper';
+import { useAuth } from '../providers/AuthProvider';
 import api from '../utils/axios';
 
 export default function ProfileScreen(): JSX.Element {
@@ -22,7 +23,7 @@ export default function ProfileScreen(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(true);
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
-
+  const { logout, user, refreshUserProfile } = useAuth();
   const showSnackbar = (message: string): void => {
     setSnackbarMessage(message);
     setSnackbarVisible(true);
@@ -78,6 +79,8 @@ export default function ProfileScreen(): JSX.Element {
         const newImageUrl = res.data.signedUrl;
         setProfileImageUrl(newImageUrl);
         showSnackbar('Profile picture updated!');
+        // Refresh global user data
+        await refreshUserProfile();
       } catch (err) {
         console.error('Upload failed:', err);
         showSnackbar('Upload failed. Please try again.');
@@ -116,6 +119,13 @@ export default function ProfileScreen(): JSX.Element {
             onPress={pickAndUploadImage}
           >
             Change Profile Picture
+          </Button>
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={logout}
+          >
+            Logout
           </Button>
         </Card.Content>
       </Card>

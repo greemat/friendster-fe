@@ -2,6 +2,8 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
+import { Avatar, TouchableRipple } from 'react-native-paper';
+import { useAuth } from '../providers/AuthProvider';
 import MainScreen from '../screens/MainScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SuccessScreen from '../screens/SuccessScreen';
@@ -15,12 +17,32 @@ export type MainStackParamList = {
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
 export default function MainNavigator() {
+  const { user } = useAuth();
+  
   return (
     <Stack.Navigator initialRouteName="Main">
       <Stack.Screen 
         name="Main" 
         component={MainScreen} 
-        options={{ title: 'Fill Your Details' }}
+        options={({ navigation }) => ({
+          title: 'Home',
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => navigation.navigate('Profile')}
+              borderless
+              style={{ marginRight: 16 }}
+            >
+              <Avatar.Image
+                size={36}
+                source={
+                  user?.profileImageUrl
+                    ? { uri: user.profileImageUrl }
+                    : require('../../assets/images/default-avatar.png')
+                }
+              />
+            </TouchableRipple>
+          ),
+        })}
       />
       <Stack.Screen 
         name="Profile" 

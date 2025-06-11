@@ -8,6 +8,7 @@ type User = {
   id: string;
   email: string;
   profileImage?: string | null;
+  profileImageUrl: string | null;
 } | null;
 
 interface AuthContextType {
@@ -19,6 +20,7 @@ interface AuthContextType {
   refreshAuthToken: () => Promise<string | null>;
   updateUserProfile: (data: FormData) => Promise<void>;
   setProfileImage: (uri: string) => void;
+  refreshUserProfile: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -30,6 +32,7 @@ export const AuthContext = createContext<AuthContextType>({
   refreshAuthToken: async () => null,
   updateUserProfile: async () => {},
   setProfileImage: () => {},
+  refreshUserProfile: async () => {},
 });
 
 interface AuthProviderProps {
@@ -110,6 +113,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       id: profileRes.data.uid,
       email: profileRes.data.email,
       profileImage: profileRes.data.profileImage || null,
+      profileImageUrl: res.data.profileImageUrl ?? null,
     });
   };
 
@@ -135,6 +139,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user) setUser({ ...user, profileImage: uri });
   };
 
+  const refreshUserProfile = async () => {
+    try {
+      const res = await api.get('/auth/profile');
+      setUser(res.data);
+    } catch (err) {
+      console.error('Error refreshing user profile:', err);
+    }
+  };
+
   useEffect(() => {
     const restoreSession = async () => {
       setInitializing(true);
@@ -152,6 +165,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           id: profileRes.data.uid,
           email: profileRes.data.email,
           profileImage: profileRes.data.profileImage || null,
+          profileImageUrl: profileRes.data.profileImageUrl ?? null,
         });
       } catch (err) {
         console.warn('Session restoration failed:', err);
@@ -159,7 +173,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setInitializing(false);
       }
     };
-
     restoreSession();
   }, []);
 
@@ -174,6 +187,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         refreshAuthToken,
         updateUserProfile,
         setProfileImage,
+        refreshUserProfile,
       }}
     >
       {children}
