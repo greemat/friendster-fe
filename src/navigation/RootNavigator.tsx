@@ -4,8 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { useAuth } from '../providers/AuthProvider';
 import AuthNavigator from './AuthNavigator';
-import MainNavigator from './MainNavigator';
 import SplashNavigator from './SplashNavigator';
+import TabNavigator from './TabNavigator';
 
 import type { RootStackParamList } from './types';
 
@@ -22,7 +22,7 @@ export default function RootNavigator() {
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
-        <RootStack.Screen name="MainRoot" component={MainNavigator} />
+        <RootStack.Screen name="MainRoot" component={TabNavigator} />
       ) : (
         <RootStack.Screen name="AuthRoot" component={AuthNavigator} />
       )}
