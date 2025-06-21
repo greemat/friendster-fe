@@ -35,7 +35,6 @@ export default function ProfileScreen(): JSX.Element {
       const { email, profileImageUrl } = res.data;
       setEmail(email);
       setProfileImageUrl(profileImageUrl ?? null);
-      //console.log('Fetched profile:', res.data);
     } catch (err) {
       console.error('Failed to fetch profile', err);
       showSnackbar('Failed to load profile.');
@@ -99,7 +98,6 @@ export default function ProfileScreen(): JSX.Element {
       </View>
     );
   }
-  //console.log('Profile Image: ', profileImageUrl);
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>
@@ -120,7 +118,13 @@ export default function ProfileScreen(): JSX.Element {
           >
             Change Profile Picture
           </Button>
-
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={logout}
+          >
+            Logout
+          </Button>
         </Card.Content>
       </Card>
 

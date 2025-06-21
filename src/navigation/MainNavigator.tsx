@@ -19,7 +19,6 @@ const Stack = createNativeStackNavigator<MainStackParamList>();
 
 export default function MainNavigator() {
   const { user, logout } = useAuth();
-  //const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const [menuVisible, setMenuVisible] = useState(false);
 
   return (
