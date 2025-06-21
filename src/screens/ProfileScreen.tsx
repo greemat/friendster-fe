@@ -118,13 +118,6 @@ export default function ProfileScreen(): JSX.Element {
           >
             Change Profile Picture
           </Button>
-          <Button
-            mode="contained"
-            style={styles.button}
-            onPress={logout}
-          >
-            Logout
-          </Button>
         </Card.Content>
       </Card>
 
