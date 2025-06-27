@@ -23,7 +23,7 @@ export default function TabNavigator() {
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: '#6200ee',
-        tabBarLabelStyle: { fontSize: 16 },
+        tabBarLabelStyle: { fontSize: 14 },
       }}
     >
       <Tab.Screen
